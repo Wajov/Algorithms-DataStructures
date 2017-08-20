@@ -5,7 +5,6 @@ Gauss消元
 Graham扫描
 
 字符串算法：
-Knuth-Morris-Pratt
 扩展Knuth-Morris-Pratt
 Aho–Corasick
 最小表示
