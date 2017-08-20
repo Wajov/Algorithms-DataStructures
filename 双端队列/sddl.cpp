@@ -17,13 +17,13 @@ void PushFront(int x)
 {
     q[--l] = x;
 }
-void PopFront()
-{
-    l++;
-}
 void PushBack(int x)
 {
     q[++r] = x;
+}
+void PopFront()
+{
+    l++;
 }
 void PopBack()
 {
