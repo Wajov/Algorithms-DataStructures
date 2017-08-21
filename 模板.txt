@@ -1,5 +1,4 @@
 数学：
-Euler筛
 快速Fourier变换
 Gauss消元
 Graham扫描
