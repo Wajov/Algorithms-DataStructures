@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
-int n, t, ans, p[1000001];
-char c, s[1000001];
+int n, ans, p[2000001];
+char c, s[2000010];
 int main()
 {
     s[0] = '$';
@@ -11,11 +11,11 @@ int main()
         s[++n] = c;
     }
     s[++n] = '#';
-    for (int i = 1; i <= n; i++)
+    for (int i = 1, j = 0; i <= n; i++)
     {
-        for (p[i] = t + p[t] > i ? min(p[t * 2 - i], t + p[t] - i) : 1; s[i + p[i]] == s[i - p[i]]; p[i]++);
-        if (i + p[i] > t + p[t])
-            t = i;
+        for (p[i] = i < j + p[j] ? min(p[(j << 1) - i], j + p[j] - i) : 1; s[i + p[i]] == s[i - p[i]]; p[i]++);
+        if (i + p[i] > j + p[j])
+            j = i;
         ans = max(ans, p[i] - 1);
     }
     printf("%d\n", ans);
