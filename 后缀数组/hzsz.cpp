@@ -1,6 +1,4 @@
 #include <bits/stdc++.h>
-#define x first
-#define y second
 using namespace std;
 int n, a[100001], b[100001], sum[100001], tmp[100001], id[100001], rk[100010];
 char s[100010];
