@@ -4,7 +4,6 @@ Gauss消元
 Graham扫描
 
 字符串算法：
-扩展Knuth-Morris-Pratt
 最小表示
 
 图算法：
