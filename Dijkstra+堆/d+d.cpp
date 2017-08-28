@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 int n, m, s, u, v, c, now, tot, d[100001], Head[100001], Next[200001], Link[200001], Cost[200001];
-bool flag[1001];
+bool flag[100001];
 priority_queue<pair<int, int> > q;
 inline void AddEdge(int u, int v, int c)
 {
