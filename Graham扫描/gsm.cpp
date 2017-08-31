@@ -5,13 +5,21 @@ using namespace std;
 typedef pair<double, double> Point;
 int n, top;
 Point p[100001], s[100001];
-inline double Cross(Point p0, Point p1, Point p2)
+inline double Sqr(double x)
 {
-    return (p1.x - p0.x) * (p2.y - p0.y) - (p2.x - p0.x) * (p1.y - p0.y);
+    return x * x;
+}
+inline double Dist(Point a, Point b)
+{
+    return sqrt(Sqr(a.x - b.x) + Sqr(a.y - b.y));
+}
+inline double Cross(Point a, Point b, Point c)
+{
+    return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
 }
 inline bool cmp(Point a, Point b)
 {
-    return Cross(p[0], a, b) > 0;
+    return Cross(p[0], a, b) > 0 || Cross(p[0], a, b) == 0 && Dist(p[0], a) < Dist(p[0], b);
 }
 int main()
 {
@@ -29,6 +37,7 @@ int main()
         for (; top > 1 && Cross(s[top - 1], s[top], p[i]) < 0; top--);
         s[++top] = p[i];
     }
+    for (; top > 2 && Cross(s[top - 1], s[top], s[1]) < 0; top--);
     printf("%d\n", top);
     for (int i = 1; i <= top; i++)
         printf("%.5f %.5f\n", s[i].x, s[i].y);
