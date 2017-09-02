@@ -14,7 +14,9 @@ int main()
     s[++n] = '#';
     for (int i = 1, j = 0; i <= n; i++)
     {
-        for (p[i] = i < j + p[j] ? min(p[(j << 1) - i], j + p[j] - i) : 1; s[i + p[i]] == s[i - p[i]]; p[i]++);
+        p[i] = i < j + p[j] ? min(p[(j << 1) - i], j + p[j] - i) : 1;
+        while (s[i + p[i]] == s[i - p[i]])
+            p[i]++;
         if (i + p[i] > j + p[j])
             j = i;
         ans = max(ans, p[i] - 1);

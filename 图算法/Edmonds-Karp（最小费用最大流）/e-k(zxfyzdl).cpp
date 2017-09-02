@@ -1,12 +1,4 @@
-#include <algorithm>
-#include <climits>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <string>
-#include <queue>
+#include <bits/stdc++.h>
 using namespace std;
 const int N = 1001, M = 10001;
 int n, m, S, T, u, v, r, c, tmp, tot, sum, ans1, ans2, Head[N], Next[M << 1], Link[M << 1], Rest[M << 1], Cost[M << 1], d[N], From[N], Edge[N];
