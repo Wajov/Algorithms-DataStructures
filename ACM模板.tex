@@ -13,6 +13,41 @@
 \newpage
 \lstset{language = C++, basicstyle=\ttfamily\footnotesize, numbers = left, frame = shadowbox, keywordstyle = \color{blue!70}, commentstyle = \color{red!50!green!50!blue!50}, rulesepcolor = \color{red!20!green!20!blue!20}}
 \section{字符串算法}
+\subsection{最小表示}
+\begin{lstlisting}
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 1000001;
+int n, x, y, t, ans;
+char s[N + 10];
+int main()
+{
+    scanf("%s", s + 1);
+    n = strlen(s + 1);
+    x = 1;
+    y = 2;
+    for (int i = 0; x <= n && y <= n && i <= n; )
+    {
+        t = s[(x + i - 1) % n + 1] - s[(y + i - 1) % n + 1];
+        if (!t)
+            i++;
+        else
+        {
+            t > 0 ? x += i + 1 : y += i + 1;
+            if (x == y)
+                y++;
+            i = 0;
+        }
+    }
+    ans = min(x, y);
+    for (int i = ans; i <= n; i++)
+        putchar(s[i]);
+    for (int i = 1; i < ans; i++)
+        putchar(s[i]);
+    puts("");
+    return 0;
+}
+\end{lstlisting}
 \subsection{Manacher}
 \begin{lstlisting}
 #include <bits/stdc++.h>
@@ -42,7 +77,7 @@ int main()
     return 0;
 }
 \end{lstlisting}
-\subsection{Knuth–Morris–Pratt}
+\subsection{Knuth-Morris-Pratt}
 \begin{lstlisting}
 #include <bits/stdc++.h>
 using namespace std;
@@ -78,7 +113,7 @@ int main()
     return 0;
 }
 \end{lstlisting}
-\subsection{扩展Knuth–Morris–Pratt}
+\subsection{扩展Knuth-Morris-Pratt}
 \begin{lstlisting}
 #include <bits/stdc++.h>
 using namespace std;
@@ -110,7 +145,7 @@ int main()
     return 0;
 }
 \end{lstlisting}
-\subsection{Aho–Corasick}
+\subsection{Aho-Corasick}
 \begin{lstlisting}
 #include <bits/stdc++.h>
 using namespace std;
@@ -251,7 +286,7 @@ int main()
     return 0;
 }
 \end{lstlisting}
-\subsection{Floyd–Warshall}
+\subsection{Floyd-Warshall}
 \begin{lstlisting}
 #include <bits/stdc++.h>
 using namespace std;
@@ -921,22 +956,21 @@ int main()
     return 0;
 }
 \end{lstlisting}
-\subsection{Edmonds-Karp（最小费用最大流）}
+\subsection{Dinic（最小费用最大流）}
 \begin{lstlisting}
 #include <bits/stdc++.h>
 using namespace std;
 const int N = 1001, M = 10001;
-int n, m, S, T, u, v, r, c, tmp, tot, sum, ans1, ans2;
-int Head[N], Next[M << 1], Link[M << 1], Rest[M << 1], Cost[M << 1], d[N], From[N], Edge[N];
+int n, m, S, T, u, v, r, c, tot, ans1, ans2, Head[N], cur[N], Next[M << 1], Link[M << 1], Rest[M << 1], Cost[M << 1], d[N], From[N], Edge[N];
 bool flag[N];
 queue<int> q;
 inline void AddEdge(int u, int v, int r, int c)
 {
-	Next[++tot] = Head[u];
-	Link[tot] = v;
-	Rest[tot] = r;
-	Cost[tot] = c;
-	Head[u] = tot;
+    Next[++tot] = Head[u];
+    Link[tot] = v;
+    Rest[tot] = r;
+    Cost[tot] = c;
+    Head[u] = tot;
 }
 bool BFS()
 {
@@ -954,8 +988,6 @@ bool BFS()
 			if (Rest[i] > 0 && d[now] + Cost[i] < d[j = Link[i]])
 			{
 				d[j] = d[now] + Cost[i];
-				From[j] = now;
-				Edge[j] = i;
 				if (!flag[j])
 				{
 					q.push(j);
@@ -964,6 +996,43 @@ bool BFS()
 			}
 	}
 	return d[T] < INT_MAX;
+}
+bool DFS(int x)
+{
+    if (x == T)
+    {
+        int tmp = INT_MAX, sum = 0;
+        for (int i = T; i != S; i = From[i])
+        {
+            tmp = min(tmp, Rest[Edge[i]]);
+            sum += Cost[Edge[i]];
+        }
+        for (int i = T; i != S; i = From[i])
+        {
+            Rest[Edge[i]] -= tmp;
+            Rest[Edge[i] ^ 1] += tmp;
+        }
+        ans1 += tmp;
+        ans2 += tmp * sum;
+        return true;
+    }
+    flag[x] = true;
+    for (int &i = cur[x], j; i; i = Next[i])
+    {
+        j = Link[i];
+        if (Rest[i] > 0 && !flag[j] && d[x] + Cost[i] == d[j])
+        {
+            From[j] = x;
+            Edge[j] = i;
+            if (DFS(j))
+            {
+                flag[x] = false;
+                return true;
+            }
+        }
+    }
+    flag[x] = false;
+    return false;
 }
 int main()
 {
@@ -977,23 +1046,11 @@ int main()
     }
     while (BFS())
     {
-        sum = 0;
-        tmp = INT_MAX;
-        for (int i = T; i != S; i = From[i])
-        {
-            sum += Cost[Edge[i]];
-            tmp = min(tmp, Rest[Edge[i]]);
-        }
-        for (int i = T; i != S; i = From[i])
-        {
-            Rest[Edge[i]] -= tmp;
-            Rest[Edge[i] ^ 1] += tmp;
-        }
-        ans1 += tmp;
-        ans2 += tmp * sum;
+        memcpy(cur, Head, sizeof(cur));
+        while (DFS(S));
     }
     printf("%d %d\n", ans1, ans2);
-	return 0;
+    return 0;
 }
 \end{lstlisting}
 \section{树算法}

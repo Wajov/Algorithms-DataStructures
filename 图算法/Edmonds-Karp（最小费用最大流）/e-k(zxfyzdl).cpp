@@ -51,12 +51,12 @@ int main()
     }
     while (BFS())
     {
-        sum = 0;
         tmp = INT_MAX;
+        sum = 0;
         for (int i = T; i != S; i = From[i])
         {
-            sum += Cost[Edge[i]];
             tmp = min(tmp, Rest[Edge[i]]);
+            sum += Cost[Edge[i]];
         }
         for (int i = T; i != S; i = From[i])
         {
