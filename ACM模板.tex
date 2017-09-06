@@ -2,6 +2,7 @@
 \usepackage{xeCJK}
 \usepackage{geometry}
 \usepackage{listings}
+\usepackage{fontspec}
 \usepackage{xcolor}
 \geometry{left = 2.5cm, right = 2.5cm, top = 2.54cm, bottom = 2.54cm}
 \title{ACM模板}
@@ -11,7 +12,8 @@
 \renewcommand{\contentsname}{目录}
 \tableofcontents
 \newpage
-\lstset{language = C++, basicstyle=\ttfamily\footnotesize, numbers = left, frame = shadowbox, keywordstyle = \color{blue!70}, commentstyle = \color{red!50!green!50!blue!50}, rulesepcolor = \color{red!20!green!20!blue!20}}
+\newfontfamily\consolas{Consolas}
+\lstset{language = C++, basicstyle = \footnotesize\consolas, numbers = left, numberstyle = \footnotesize\consolas, frame = single, keywordstyle = \color{blue}, stringstyle = \color{red}, commentstyle = \color{gray}}
 \section{字符串算法}
 \subsection{最小表示}
 \begin{lstlisting}
