@@ -963,7 +963,8 @@ int main()
 #include <bits/stdc++.h>
 using namespace std;
 const int N = 1001, M = 10001;
-int n, m, S, T, u, v, r, c, tot, ans1, ans2, Head[N], cur[N], Next[M << 1], Link[M << 1], Rest[M << 1], Cost[M << 1], d[N], From[N], Edge[N];
+int n, m, S, T, u, v, r, c, tot, ans1, ans2;
+int Head[N], cur[N], Next[M << 1], Link[M << 1], Rest[M << 1], Cost[M << 1], d[N], From[N], Edge[N];
 bool flag[N];
 queue<int> q;
 inline void AddEdge(int u, int v, int r, int c)
@@ -1113,13 +1114,212 @@ int main()
     return 0;
 }
 \end{lstlisting}
-\subsection{树链剖分}
+\subsection{树链剖分+树状数组}
 \begin{lstlisting}
 #include <bits/stdc++.h>
 using namespace std;
 const int N = 100001;
-int n, u, v, num, tot
-int Head[N], Next[N << 1], Link[N << 1], d[N], f[N], s[N], son[N], top[N], idx[N], key[N];
+int n, u, v, tot, num;
+int a[N], d[N], f[N], s[N], son[N], top[N], idx[N];
+int Head[N], Next[N << 1], Link[N << 1];
+int sum[N];
+inline void AddEdge(int u, int v)
+{
+    Next[++tot] = Head[u];
+    Link[tot] = v;
+    Head[u] = tot;
+}
+void DFS1(int x)
+{
+    d[x] = d[f[x]] + 1;
+    s[x] = 1;
+    for (int i = Head[x], j; i; i = Next[i])
+        if (!d[j = Link[i]])
+        {
+            f[j] = x;
+            DFS1(j);
+            s[x] += s[j];
+            if (s[j] > s[son[x]])
+                son[x] = j;
+        }
+}
+void DFS2(int x)
+{
+    top[x] = x == son[f[x]] ? top[f[x]] : x;
+    idx[x] = ++num;
+    if (son[x])
+        DFS2(son[x]);
+    for (int i = Head[x], j; i; i = Next[i])
+    {
+        j = Link[i];
+        if (f[j] == x && j != son[x])
+            DFS2(j);
+    }
+}
+void TAdd(int x, int y)
+{
+    for (; x <= n; x += x & -x)
+        sum[x] += y;
+}
+int TSum(int x)
+{
+    int ans = 0;
+    for (; x; x -= x & -x)
+        ans += sum[x];
+    return ans;
+}
+void Add(int x, int y)
+{
+    TAdd(idx[x], y);
+}
+int Sum(int x, int y)
+{
+    int u, v, ans = 0;
+    while ((u = top[x]) != (v = top[y]))
+        if (d[u] > d[v])
+        {
+            ans += TSum(idx[x]) - TSum(idx[u] - 1);
+            x = f[u];
+        }
+        else
+        {
+            ans += TSum(idx[y]) - TSum(idx[v] - 1);
+            y = f[v];
+        }
+    if (d[x] > d[y])
+        swap(x, y);
+    return ans += TSum(idx[y]) - TSum(idx[x] - 1);
+}
+int main()
+{
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i++)
+        scanf("%d", &a[i]);
+    for (int i = 1; i < n; i++)
+    {
+        scanf("%d%d", &u, &v);
+        AddEdge(u, v);
+        AddEdge(v, u);
+    }
+    DFS1(1);
+    DFS2(1);
+    return 0;
+}
+\end{lstlisting}
+\subsection{树链剖分+张昆玮线段树}
+\begin{lstlisting}
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 100001;
+int n, SIZE, u, v, tot, num;
+int a[N], d[N], f[N], s[N], son[N], top[N], idx[N];
+int Head[N], Next[N << 1], Link[N << 1];
+int sum[N << 2];
+inline void AddEdge(int u, int v)
+{
+    Next[++tot] = Head[u];
+    Link[tot] = v;
+    Head[u] = tot;
+}
+void DFS1(int x)
+{
+    d[x] = d[f[x]] + 1;
+    s[x] = 1;
+    for (int i = Head[x], j; i; i = Next[i])
+        if (!d[j = Link[i]])
+        {
+            f[j] = x;
+            DFS1(j);
+            s[x] += s[j];
+            if (s[j] > s[son[x]])
+                son[x] = j;
+        }
+}
+void DFS2(int x)
+{
+    top[x] = x == son[f[x]] ? top[f[x]] : x;
+    idx[x] = ++num;
+    if (son[x])
+        DFS2(son[x]);
+    for (int i = Head[x], j; i; i = Next[i])
+    {
+        j = Link[i];
+        if (f[j] == x && j != son[x])
+            DFS2(j);
+    }
+}
+void TBuild()
+{
+    for (SIZE = 1; SIZE < n + 2; SIZE <<= 1);
+    for (int i = 1; i <= n; i++)
+        sum[SIZE + idx[i]] = a[i];
+    for (int i = SIZE - 1; i; i--)
+        sum[i] = sum[i << 1] + sum[(i << 1) + 1];
+}
+void TAdd(int x, int y)
+{
+    for (x += SIZE; x; x >>= 1)
+        sum[x] += y;
+}
+int TSum(int x, int y)
+{
+    int ans = 0;
+    for (x += SIZE - 1, y += SIZE + 1; x ^ y ^ 1; x >>= 1, y >>= 1)
+    {
+        if ((x & 1) == 0)
+            ans += sum[x ^ 1];
+        if ((y & 1) == 1)
+            ans += sum[y ^ 1];
+    }
+    return ans;
+}
+void Add(int x, int y)
+{
+    TAdd(idx[x], y);
+}
+int Sum(int x, int y)
+{
+    int u, v, ans = 0;
+    while ((u = top[x]) != (v = top[y]))
+        if (d[u] > d[v])
+        {
+            ans += TSum(idx[u], idx[x]);
+            x = f[u];
+        }
+        else
+        {
+            ans += TSum(idx[v], idx[y]);
+            y = f[v];
+        }
+    if (d[x] > d[y])
+        swap(x, y);
+    return ans += TSum(idx[x], idx[y]);
+}
+int main()
+{
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i++)
+        scanf("%d", &a[i]);
+    for (int i = 1; i < n; i++)
+    {
+        scanf("%d%d", &u, &v);
+        AddEdge(u, v);
+        AddEdge(v, u);
+    }
+    DFS1(1);
+    DFS2(1);
+    return 0;
+}
+\end{lstlisting}
+\subsection{树链剖分+线段树}
+\begin{lstlisting}
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 100001;
+int n, u, v, tot, num;
+int a[N], d[N], f[N], s[N], son[N], top[N], idx[N], key[N];
+int Head[N], Next[N << 1], Link[N << 1];
+int l[N << 1], r[N << 1], sum[N << 1], lab[N << 1];
 inline void AddEdge(int u, int v)
 {
     Next[++tot] = Head[u];
@@ -1153,9 +1353,109 @@ void DFS2(int x)
             DFS2(j);
     }
 }
+inline void TDown(int p, int x, int y)
+{
+    if (x < y)
+    {
+        int z = x + y >> 1;
+        sum[l[p]] += lab[p] * (z - x + 1);
+        sum[r[p]] += lab[p] * (y - z);
+        lab[l[p]] += lab[p];
+        lab[r[p]] += lab[p];
+    }
+    lab[p] = 0;
+}
+inline void TUp(int p)
+{
+    sum[p] = sum[l[p]] + sum[r[p]];
+}
+void TBuild(int p, int x, int y)
+{
+    if (x == y)
+    {
+        sum[p] = a[key[x]];
+        return;
+    }
+    int z = x + y >> 1;
+    TBuild(l[p] = ++num, x, z);
+    TBuild(r[p] = ++num, z + 1, y);
+    TUp(p);
+}
+void TAdd(int p, int x, int y, int a, int b, int c)
+{
+    TDown(p, x, y);
+    if (x == a && y == b)
+    {
+        sum[p] += c * (y - x + 1);
+        lab[p] += c;
+        return;
+    }
+    int z = x + y >> 1;
+    if (b <= z)
+        TAdd(l[p], x, z, a, b, c);
+    else if (a > z)
+        TAdd(r[p], z + 1, y, a, b, c);
+    else
+    {
+        TAdd(l[p], x, z, a, z, c);
+        TAdd(r[p], z + 1, y, z + 1, b, c);
+    }
+    TUp(p);
+}
+int TSum(int p, int x, int y, int a, int b)
+{
+    TDown(p, x, y);
+    if (x == a && y == b)
+        return sum[p];
+    int z = x + y >> 1;
+    if (b <= z)
+        return TSum(l[p], x, z, a, b);
+    else if (a > z)
+        return TSum(r[p], z + 1, y, a, b);
+    else
+        return TSum(l[p], x, z, a, z) + TSum(r[p], z + 1, y, z + 1, b);
+}
+void Add(int x, int y, int z)
+{
+    int u, v;
+    while ((u = top[x]) != (v = top[y]))
+        if (d[u] > d[v])
+        {
+            TAdd(1, 1, n, idx[u], idx[x], z);
+            x = f[u];
+        }
+        else
+        {
+            TAdd(1, 1, n, idx[v], idx[y], z);
+            y = f[v];
+        }
+    if (d[x] > d[y])
+        swap(x, y);
+    TAdd(1, 1, n, idx[x], idx[y], z);
+}
+int Sum(int x, int y)
+{
+    int u, v, ans = 0;
+    while ((u = top[x]) != (v = top[y]))
+        if (d[u] > d[v])
+        {
+            ans += TSum(1, 1, n, idx[u], idx[x]);
+            x = f[u];
+        }
+        else
+        {
+            ans += TSum(1, 1, n, idx[v], idx[y]);
+            y = f[v];
+        }
+    if (d[x] > d[y])
+        swap(x, y);
+    return ans += TSum(1, 1, n, idx[x], idx[y]);
+}
 int main()
 {
     scanf("%d", &n);
+    for (int i = 1; i <= n; i++)
+        scanf("%d", &a[i]);
     for (int i = 1; i < n; i++)
     {
         scanf("%d%d", &u, &v);
@@ -1164,9 +1464,7 @@ int main()
     }
     DFS1(1);
     DFS2(1);
-    for (int i = 1; i < n; i++)
-        printf("%d ", key[i]);
-    printf("%d\n", key[n]);
+    num = 1;
     return 0;
 }
 \end{lstlisting}
@@ -1369,6 +1667,157 @@ int main()
     return 0;
 }
 \end{lstlisting}
+\subsection{伸展树（区间）}
+\begin{lstlisting}
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 100001;
+int root, pos, l[N], r[N], f[N], s[N], key[N], lab[N], sum[N];
+bool flag[N];
+inline void Down(int p)
+{
+    if (l[p])
+    {
+        key[l[p]] += lab[p];
+        lab[l[p]] += lab[p];
+        sum[l[p]] += s[l[p]] * lab[p];
+        if (flag[p])
+        {
+            flag[l[p]] = !flag[l[p]];
+            swap(l[l[p]], r[l[p]]);
+        }
+    }
+    if (r[p])
+    {
+        key[r[p]] += lab[p];
+        lab[r[p]] += lab[p];
+        sum[r[p]] += s[r[p]] * lab[p];
+        if (flag[p])
+        {
+            flag[r[p]] = !flag[r[p]];
+            swap(l[r[p]], r[r[p]]);
+        }
+    }
+    lab[p] = 0;
+    flag[p] = false;
+}
+inline void Up(int p)
+{
+    s[p] = s[l[p]] + s[r[p]] + 1;
+    sum[p] = sum[l[p]] + sum[r[p]] + key[p];
+}
+inline void L(int p)
+{
+    int t = f[p];
+    if (r[t] = l[p])
+        f[l[p]] = t;
+    if (f[p] = f[t])
+        t == l[f[t]] ? l[f[t]] = p : r[f[t]] = p;
+    f[t] = p;
+    l[p] = t;
+}
+inline void R(int p)
+{
+    int t = f[p];
+    if (l[t] = r[p])
+        f[r[p]] = t;
+    if (f[p] = f[t])
+        t == l[f[t]] ? l[f[t]] = p : r[f[t]] = p;
+    f[t] = p;
+    r[p] = t;
+}
+void Splay(int p, int T)
+{
+    for (int q, t; (q = f[p]) != T; )
+        if (f[q] == T)
+        {
+            p == l[q] ? R(p) : L(p);
+            Up(q), Up(p);
+        }
+        else
+        {
+            t = f[q];
+            if (p == l[q])
+                q == l[t] ? (R(q), R(p)) : (R(p), L(p));
+            else
+                q == r[t] ? (L(q), L(p)) : (L(p), R(p));
+            Up(t), Up(q), Up(p);
+        }
+    if (!T)
+        root = p;
+}
+int Select(int x)
+{
+    int p = root, t = s[l[root]];
+    Down(p);
+    while (x != t + 1)
+    {
+        if (x < t + 1)
+            t -= s[r[p = l[p]]] + 1;
+        else
+            t += s[l[p = r[p]]] + 1;
+        Down(p);
+    }
+    return p;
+}
+void Insert(int x, int y)
+{
+    int p = Select(x + 1);
+    Splay(p, 0);
+    Down(p);
+    for (p = r[p]; l[p]; p = l[p])
+        Down(p);
+    Down(p);
+    l[p] = ++pos;
+    f[pos] = p;
+    sum[pos] = key[pos] = y;
+    Splay(pos, 0);
+}
+void Delete(int x)
+{
+    int p = Select(x + 1);
+    Splay(p, 0);
+    Down(p);
+    for (p = l[p]; r[p]; p = r[p])
+        Down(p);
+    Down(p);
+    f[r[root]] = p;
+    r[p] = r[root];
+    f[l[root]] = 0;
+    Splay(p, 0);
+}
+void Add(int x, int y, int z)
+{
+    Splay(Select(x), 0);
+    Splay(Select(y + 2), root);
+    key[l[r[root]]] += z;
+    lab[l[r[root]]] += z;
+    sum[l[r[root]]] += s[l[r[root]]] * z;
+    Up(r[root]), Up(root);
+}
+void Reverse(int x, int y)
+{
+    Splay(Select(x), 0);
+    Splay(Select(y + 2), root);
+    flag[l[r[root]]] = !flag[l[r[root]]];
+    swap(l[l[r[root]]], r[l[r[root]]]);
+    Up(r[root]), Up(root);
+}
+int Sum(int x, int y)
+{
+    Splay(Select(x), 0);
+    Splay(Select(y + 2), root);
+    return sum[l[r[root]]];
+}
+int main()
+{
+    root = 1;
+    pos = 2;
+    r[1] = s[1] = 2;
+    f[2] = s[2] = 1;
+    return 0;
+} 
+\end{lstlisting}
 \subsection{伸展树}
 \begin{lstlisting}
 #include <bits/stdc++.h>
@@ -1534,157 +1983,6 @@ int main()
 {
     return 0;
 }
-\end{lstlisting}
-\subsection{伸展树（区间）}
-\begin{lstlisting}
-#include <bits/stdc++.h>
-using namespace std;
-const int N = 100001;
-int root, pos, l[N], r[N], f[N], s[N], key[N], lab[N], sum[N];
-bool flag[N];
-inline void Down(int p)
-{
-    if (l[p])
-    {
-        key[l[p]] += lab[p];
-        lab[l[p]] += lab[p];
-        sum[l[p]] += s[l[p]] * lab[p];
-        if (flag[p])
-        {
-            flag[l[p]] = !flag[l[p]];
-            swap(l[l[p]], r[l[p]]);
-        }
-    }
-    if (r[p])
-    {
-        key[r[p]] += lab[p];
-        lab[r[p]] += lab[p];
-        sum[r[p]] += s[r[p]] * lab[p];
-        if (flag[p])
-        {
-            flag[r[p]] = !flag[r[p]];
-            swap(l[r[p]], r[r[p]]);
-        }
-    }
-    lab[p] = 0;
-    flag[p] = false;
-}
-inline void Up(int p)
-{
-    s[p] = s[l[p]] + s[r[p]] + 1;
-    sum[p] = sum[l[p]] + sum[r[p]] + key[p];
-}
-inline void L(int p)
-{
-    int t = f[p];
-    if (r[t] = l[p])
-        f[l[p]] = t;
-    if (f[p] = f[t])
-        t == l[f[t]] ? l[f[t]] = p : r[f[t]] = p;
-    f[t] = p;
-    l[p] = t;
-}
-inline void R(int p)
-{
-    int t = f[p];
-    if (l[t] = r[p])
-        f[r[p]] = t;
-    if (f[p] = f[t])
-        t == l[f[t]] ? l[f[t]] = p : r[f[t]] = p;
-    f[t] = p;
-    r[p] = t;
-}
-void Splay(int p, int T)
-{
-    for (int q, t; (q = f[p]) != T; )
-        if (f[q] == T)
-        {
-            p == l[q] ? R(p) : L(p);
-            Up(q), Up(p);
-        }
-        else
-        {
-            t = f[q];
-            if (p == l[q])
-                q == l[t] ? (R(q), R(p)) : (R(p), L(p));
-            else
-                q == r[t] ? (L(q), L(p)) : (L(p), R(p));
-            Up(t), Up(q), Up(p);
-        }
-    if (!T)
-        root = p;
-}
-int Select(int x)
-{
-    int p = root, t = s[l[root]];
-    Down(p);
-    while (x != t + 1)
-    {
-        if (x < t + 1)
-            t -= s[r[p = l[p]]] + 1;
-        else
-            t += s[l[p = r[p]]] + 1;
-        Down(p);
-    }
-    return p;
-}
-void Insert(int x, int y)
-{
-    int p = Select(x + 1);
-    Splay(p, 0);
-    Down(p);
-    for (p = r[p]; l[p]; p = l[p])
-        Down(p);
-    Down(p);
-    l[p] = ++pos;
-    f[pos] = p;
-    sum[pos] = key[pos] = y;
-    Splay(pos, 0);
-}
-void Delete(int x)
-{
-    int p = Select(x + 1);
-    Splay(p, 0);
-    Down(p);
-    for (p = l[p]; r[p]; p = r[p])
-        Down(p);
-    Down(p);
-    f[r[root]] = p;
-    r[p] = r[root];
-    f[l[root]] = 0;
-    Splay(p, 0);
-}
-void Add(int x, int y, int z)
-{
-    Splay(Select(x), 0);
-    Splay(Select(y + 2), root);
-    key[l[r[root]]] += z;
-    lab[l[r[root]]] += z;
-    sum[l[r[root]]] += s[l[r[root]]] * z;
-    Up(r[root]), Up(root);
-}
-void Reverse(int x, int y)
-{
-    Splay(Select(x), 0);
-    Splay(Select(y + 2), root);
-    flag[l[r[root]]] = !flag[l[r[root]]];
-    swap(l[l[r[root]]], r[l[r[root]]]);
-    Up(r[root]), Up(root);
-}
-int Sum(int x, int y)
-{
-    Splay(Select(x), 0);
-    Splay(Select(y + 2), root);
-    return sum[l[r[root]]];
-}
-int main()
-{
-    root = 1;
-    pos = 2;
-    r[1] = s[1] = 2;
-    f[2] = s[2] = 1;
-    return 0;
-} 
 \end{lstlisting}
 \subsection{节点大小平衡树}
 \begin{lstlisting}
