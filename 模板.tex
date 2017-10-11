@@ -5,7 +5,7 @@
 \usepackage{fontspec}
 \usepackage{xcolor}
 \geometry{left = 2.5cm, right = 2.5cm, top = 2.54cm, bottom = 2.54cm}
-\title{ACM模板}
+\title{模板}
 \author{Wajov}
 \begin{document}
 \maketitle
@@ -958,22 +958,22 @@ int main()
     return 0;
 }
 \end{lstlisting}
-\subsection{Dinic（最小费用最大流）}
+\subsection{Edmonds-Karp（最小费用最大流）}
 \begin{lstlisting}
 #include <bits/stdc++.h>
 using namespace std;
 const int N = 1001, M = 10001;
-int n, m, S, T, u, v, r, c, tot, ans1, ans2;
-int Head[N], cur[N], Next[M << 1], Link[M << 1], Rest[M << 1], Cost[M << 1], d[N], From[N], Edge[N];
+int n, m, S, T, u, v, r, c, tmp, tot, sum, ans1, ans2;
+int Head[N], Next[M << 1], Link[M << 1], Rest[M << 1], Cost[M << 1], d[N], From[N], Edge[N];
 bool flag[N];
 queue<int> q;
 inline void AddEdge(int u, int v, int r, int c)
 {
-    Next[++tot] = Head[u];
-    Link[tot] = v;
-    Rest[tot] = r;
-    Cost[tot] = c;
-    Head[u] = tot;
+	Next[++tot] = Head[u];
+	Link[tot] = v;
+	Rest[tot] = r;
+	Cost[tot] = c;
+	Head[u] = tot;
 }
 bool BFS()
 {
@@ -991,6 +991,8 @@ bool BFS()
 			if (Rest[i] > 0 && d[now] + Cost[i] < d[j = Link[i]])
 			{
 				d[j] = d[now] + Cost[i];
+				From[j] = now;
+				Edge[j] = i;
 				if (!flag[j])
 				{
 					q.push(j);
@@ -999,43 +1001,6 @@ bool BFS()
 			}
 	}
 	return d[T] < INT_MAX;
-}
-bool DFS(int x)
-{
-    if (x == T)
-    {
-        int tmp = INT_MAX, sum = 0;
-        for (int i = T; i != S; i = From[i])
-        {
-            tmp = min(tmp, Rest[Edge[i]]);
-            sum += Cost[Edge[i]];
-        }
-        for (int i = T; i != S; i = From[i])
-        {
-            Rest[Edge[i]] -= tmp;
-            Rest[Edge[i] ^ 1] += tmp;
-        }
-        ans1 += tmp;
-        ans2 += tmp * sum;
-        return true;
-    }
-    flag[x] = true;
-    for (int &i = cur[x], j; i; i = Next[i])
-    {
-        j = Link[i];
-        if (Rest[i] > 0 && !flag[j] && d[x] + Cost[i] == d[j])
-        {
-            From[j] = x;
-            Edge[j] = i;
-            if (DFS(j))
-            {
-                flag[x] = false;
-                return true;
-            }
-        }
-    }
-    flag[x] = false;
-    return false;
 }
 int main()
 {
@@ -1049,11 +1014,23 @@ int main()
     }
     while (BFS())
     {
-        memcpy(cur, Head, sizeof(cur));
-        while (DFS(S));
+        tmp = INT_MAX;
+        sum = 0;
+        for (int i = T; i != S; i = From[i])
+        {
+            tmp = min(tmp, Rest[Edge[i]]);
+            sum += Cost[Edge[i]];
+        }
+        for (int i = T; i != S; i = From[i])
+        {
+            Rest[Edge[i]] -= tmp;
+            Rest[Edge[i] ^ 1] += tmp;
+        }
+        ans1 += tmp;
+        ans2 += tmp * sum;
     }
     printf("%d %d\n", ans1, ans2);
-    return 0;
+	return 0;
 }
 \end{lstlisting}
 \section{树算法}
@@ -1988,6 +1965,67 @@ int main()
     for (int i = 1; i < n; i++)
         printf("%d ", miu[i]);
     printf("%d\n", miu[n]);
+    return 0;
+}
+\end{lstlisting}
+\subsection{快速Fourier变换}
+\begin{lstlisting}
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 100001;
+const double PI = acos(-1);
+int n, m, LENG, SIZE;
+double t;
+complex<double> a[N << 2], b[N << 2], c[N << 2];
+complex<double> ya[N << 2], yb[N << 2], yc[N << 2], yt[N << 2];
+void DFT(complex<double> a[], complex<double> y[], bool flag)
+{
+    int t;
+    double tmp;
+    for (int i = 0; i < SIZE; i++)
+    {
+        t = 0;
+        for (int j = 0; j < LENG; j++)
+            t += (i >> j & 1) << LENG - j - 1;
+        y[i] = a[t];
+    }
+    for (t = 1; t < SIZE; t <<= 1)
+    {
+        tmp = (flag ? -1 : 1) * PI / t;
+        for (int i = 0; i < SIZE; i += t << 1)
+            for (int j = 0; j < t; j++)
+            {
+                yt[i + j] = y[i + j] + polar(1.0, tmp * j) * y[i + t + j];
+                yt[i + t + j] = y[i + j] + polar(1.0, tmp * (t + j)) * y[i + t + j];
+            }
+        memcpy(y, yt, sizeof(yt));
+    }
+    if (flag)
+        for (int i = 0; i < SIZE; i++)
+            y[i] /= SIZE;
+}
+int main()
+{
+    scanf("%d%d", &n, &m);
+    for (int i = 0; i < n; i++)
+    {
+        scanf("%lf", &t);
+        a[i] = {t, 0};
+    }
+    for (int i = 0; i < m; i++)
+    {
+        scanf("%lf", &t);
+        b[i] = {t, 0};
+    }
+    for (LENG = 0, SIZE = 1; SIZE < n + m - 1; LENG++, SIZE <<= 1);
+    DFT(a, ya, false);
+    DFT(b, yb, false);
+    for (int i = 0; i < SIZE; i++)
+        yc[i] = ya[i] * yb[i];
+    DFT(yc, c, true);
+    for (int i = 0; i < n + m - 2; i++)
+        printf("%.5f ", c[i].real());
+    printf("%.5f\n", c[n + m - 2].real());
     return 0;
 }
 \end{lstlisting}

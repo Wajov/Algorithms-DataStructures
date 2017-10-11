@@ -1,5 +1,4 @@
 数学：
-快速Fourier变换
 Gauss消元
 
 图算法：
