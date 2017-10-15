@@ -3,19 +3,16 @@ using namespace std;
 const int N = 1000001;
 int n, x, y, t, ans;
 char s[N + 10];
-int main()
-{
+int main() {
     scanf("%s", s + 1);
     n = strlen(s + 1);
     x = 1;
     y = 2;
-    for (int i = 0; x <= n && y <= n && i <= n; )
-    {
+    for (int i = 0; x <= n && y <= n && i <= n; ) {
         t = s[(x + i - 1) % n + 1] - s[(y + i - 1) % n + 1];
         if (!t)
             i++;
-        else
-        {
+        else {
             t > 0 ? x += i + 1 : y += i + 1;
             if (x == y)
                 y++;

@@ -3,26 +3,21 @@ using namespace std;
 const int N = 100001;
 int root, pos, l[N], r[N], f[N], s[N], key[N], lab[N], sum[N];
 bool flag[N];
-inline void Down(int p)
-{
-    if (l[p])
-    {
+inline void Down(int p) {
+    if (l[p]) {
         key[l[p]] += lab[p];
         lab[l[p]] += lab[p];
         sum[l[p]] += s[l[p]] * lab[p];
-        if (flag[p])
-        {
+        if (flag[p]) {
             flag[l[p]] = !flag[l[p]];
             swap(l[l[p]], r[l[p]]);
         }
     }
-    if (r[p])
-    {
+    if (r[p]) {
         key[r[p]] += lab[p];
         lab[r[p]] += lab[p];
         sum[r[p]] += s[r[p]] * lab[p];
-        if (flag[p])
-        {
+        if (flag[p]) {
             flag[r[p]] = !flag[r[p]];
             swap(l[r[p]], r[r[p]]);
         }
@@ -30,13 +25,11 @@ inline void Down(int p)
     lab[p] = 0;
     flag[p] = false;
 }
-inline void Up(int p)
-{
+inline void Up(int p) {
     s[p] = s[l[p]] + s[r[p]] + 1;
     sum[p] = sum[l[p]] + sum[r[p]] + key[p];
 }
-inline void L(int p)
-{
+inline void L(int p) {
     int t = f[p];
     if (r[t] = l[p])
         f[l[p]] = t;
@@ -45,8 +38,7 @@ inline void L(int p)
     f[t] = p;
     l[p] = t;
 }
-inline void R(int p)
-{
+inline void R(int p) {
     int t = f[p];
     if (l[t] = r[p])
         f[r[p]] = t;
@@ -55,16 +47,12 @@ inline void R(int p)
     f[t] = p;
     r[p] = t;
 }
-void Splay(int p, int T)
-{
+void Splay(int p, int T) {
     for (int q, t; (q = f[p]) != T; )
-        if (f[q] == T)
-        {
+        if (f[q] == T) {
             p == l[q] ? R(p) : L(p);
             Up(q), Up(p);
-        }
-        else
-        {
+        } else {
             t = f[q];
             if (p == l[q])
                 q == l[t] ? (R(q), R(p)) : (R(p), L(p));
@@ -75,12 +63,10 @@ void Splay(int p, int T)
     if (!T)
         root = p;
 }
-int Select(int x)
-{
+int Select(int x) {
     int p = root, t = s[l[root]];
     Down(p);
-    while (x != t + 1)
-    {
+    while (x != t + 1) {
         if (x < t + 1)
             t -= s[r[p = l[p]]] + 1;
         else
@@ -89,8 +75,7 @@ int Select(int x)
     }
     return p;
 }
-void Insert(int x, int y)
-{
+void Insert(int x, int y) {
     int p = Select(x + 1);
     Splay(p, 0);
     Down(p);
@@ -102,8 +87,7 @@ void Insert(int x, int y)
     sum[pos] = key[pos] = y;
     Splay(pos, 0);
 }
-void Delete(int x)
-{
+void Delete(int x) {
     int p = Select(x + 1);
     Splay(p, 0);
     Down(p);
@@ -115,8 +99,7 @@ void Delete(int x)
     f[l[root]] = 0;
     Splay(p, 0);
 }
-void Add(int x, int y, int z)
-{
+void Add(int x, int y, int z) {
     Splay(Select(x), 0);
     Splay(Select(y + 2), root);
     key[l[r[root]]] += z;
@@ -124,25 +107,22 @@ void Add(int x, int y, int z)
     sum[l[r[root]]] += s[l[r[root]]] * z;
     Up(r[root]), Up(root);
 }
-void Reverse(int x, int y)
-{
+void Reverse(int x, int y) {
     Splay(Select(x), 0);
     Splay(Select(y + 2), root);
     flag[l[r[root]]] = !flag[l[r[root]]];
     swap(l[l[r[root]]], r[l[r[root]]]);
     Up(r[root]), Up(root);
 }
-int Sum(int x, int y)
-{
+int Sum(int x, int y) {
     Splay(Select(x), 0);
     Splay(Select(y + 2), root);
     return sum[l[r[root]]];
 }
-int main()
-{
+int main() {
     root = 1;
     pos = 2;
     r[1] = s[1] = 2;
     f[2] = s[2] = 1;
     return 0;
-} 
+}

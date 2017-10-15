@@ -5,64 +5,52 @@ int n ,m, u, v, tot, num, idx, Head[N], Next[M << 1], Link[M << 1], dfn[N], low[
 bool flag[N];
 stack<int> s;
 vector<int> sub[N];
-inline void AddEdge(int u, int v)
-{
+inline void AddEdge(int u, int v) {
     Next[++tot] = Head[u];
     Link[tot] = v;
     Head[u] = tot;
 }
-void DFS(int x, int y)
-{
+void DFS(int x, int y) {
     s.push(x);
     flag[x] = true;
     low[x] = dfn[x] = ++idx;
-    for (int i = Head[x], j; i; i = Next[i])
-    {
+    for (int i = Head[x], j; i; i = Next[i]) {
         if ((j = Link[i]) == y)
             continue;
-        if (!dfn[j])
-        {
+        if (!dfn[j]) {
             DFS(j, x);
             low[x] = min(low[x], low[j]);
-        }
-        else if (flag[j])
+        } else if (flag[j])
             low[x] = min(low[x], dfn[j]);
     }
-    if (x != y && low[x] >= dfn[y])
-    {
+    if (x != y && low[x] >= dfn[y]) {
         int t;
         num++;
-        do
-        {
+        do {
             t = s.top();
             s.pop();
             flag[t] = false;
             sub[num].push_back(t);
-        }
-        while (t != y);
+        } while (t != y);
         s.push(y);
         flag[y] = true;
     }
 }
-int main()
-{
+int main() {
     scanf("%d%d", &n, &m);
-    for (int i = 1; i <= m; i++)
-    {
+    for (int i = 1; i <= m; i++) {
         scanf("%d%d", &u, &v);
         AddEdge(u, v);
         AddEdge(v, u);
     }
     for (int i = 1; i <= n; i++)
-        if (!dfn[i])
-        {
+        if (!dfn[i]) {
             DFS(i, i);
             s.pop();
             flag[i] = false;
         }
     printf("%d\n", num);
-    for (int i = 1; i <= num; i++)
-    {
+    for (int i = 1; i <= num; i++) {
         for (int j = 0; j < sub[i].size() - 1; j++)
             printf("%d ", sub[i][j]);
         printf("%d\n", sub[i][sub[i].size() - 1]);

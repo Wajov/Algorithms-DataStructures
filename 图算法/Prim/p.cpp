@@ -3,18 +3,15 @@ using namespace std;
 const int N = 1001, M = 10001;
 int n, m, s, u, v, c, t, tmp, ans, tot, Head[N], Next[M << 1], Link[M << 1], Cost[M << 1], d[N];
 bool flag[N];
-inline void AddEdge(int u, int v, int c)
-{
+inline void AddEdge(int u, int v, int c) {
     Next[++tot] = Head[u];
     Link[tot] = v;
     Cost[tot] = c;
     Head[u] = tot;
 }
-int main()
-{
+int main() {
     scanf("%d%d", &n, &m);
-    for (int i = 1; i <= m; i++)
-    {
+    for (int i = 1; i <= m; i++) {
         scanf("%d%d%d", &u, &v, &c);
         AddEdge(u, v, c);
         AddEdge(v, u, c);
@@ -22,12 +19,10 @@ int main()
     for (int i = 1; i <= n; i++)
         d[i] = INT_MAX;
     d[1] = 0;
-    for (int i = 1; i <= n; i++)
-    {
+    for (int i = 1; i <= n; i++) {
         tmp = INT_MAX;
         for (int j = 1; j <= n; j++)
-            if (!flag[j] && d[j] < tmp)
-            {
+            if (!flag[j] && d[j] < tmp) {
                 tmp = d[j];
                 t = j;
             }

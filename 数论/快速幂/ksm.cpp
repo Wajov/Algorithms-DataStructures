@@ -1,12 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 int a, b, ans;
-int main()
-{
+int main() {
     scanf("%d%d", &a, &b);
     ans = 1;
-    while (b)
-    {
+    while (b) {
         if (b & 1)
             ans = ans * a;
         a = a * a;

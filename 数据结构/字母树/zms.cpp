@@ -2,11 +2,9 @@
 using namespace std;
 const int N = 1000001;
 int pos, son[N][26], num[N];
-void Insert(char s[])
-{
+void Insert(char s[]) {
     int t = 1, tmp;
-    for (int i = 0; s[i]; i++)
-    {
+    for (int i = 0; s[i]; i++) {
         tmp = s[i] - 97;
         if (!son[t][tmp])
             son[t][tmp] = ++pos;
@@ -14,11 +12,9 @@ void Insert(char s[])
     }
     num[t]++;
 }
-int Find(char s[])
-{
+int Find(char s[]) {
     int t = 1, tmp;
-    for (int i = 0; s[i]; i++)
-    {
+    for (int i = 0; s[i]; i++) {
         tmp = s[i] - 97;
         if (!son[t][tmp])
             return 0;
@@ -26,8 +22,7 @@ int Find(char s[])
     }
     return num[t];
 }
-int main()
-{
+int main() {
     pos = 1;
     return 0;
 }
