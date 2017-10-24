@@ -1,8 +1,0 @@
-数学：
-Gauss消元
-
-图算法：
-Hopcroft-Karp
-
-数据结构：
-左偏树
