@@ -3,24 +3,24 @@ using namespace std;
 const int N = 1000001;
 int pos, son[N][26], num[N];
 void Insert(char s[]) {
-    int t = 1, tmp;
+    int p = 1, t;
     for (int i = 0; s[i]; i++) {
-        tmp = s[i] - 97;
-        if (!son[t][tmp])
-            son[t][tmp] = ++pos;
-        t = son[t][tmp];
+        t = s[i] - 97;
+        if (!son[p][t])
+            son[p][t] = ++pos;
+        p = son[p][t];
     }
-    num[t]++;
+    num[p]++;
 }
 int Find(char s[]) {
-    int t = 1, tmp;
+    int p = 1, t;
     for (int i = 0; s[i]; i++) {
-        tmp = s[i] - 97;
-        if (!son[t][tmp])
+        t = s[i] - 97;
+        if (!son[p][t])
             return 0;
-        t = son[t][tmp];
+        p = son[p][t];
     }
-    return num[t];
+    return num[p];
 }
 int main() {
     pos = 1;

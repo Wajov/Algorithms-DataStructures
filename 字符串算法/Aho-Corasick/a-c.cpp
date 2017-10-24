@@ -5,14 +5,14 @@ int n, t, tmp, now, pos, ans, son[N][26], num[N], p[N];
 char a[N + 10], b[N + 10];
 queue<int> q;
 void Insert(char s[]) {
-    int t = 1, tmp;
+    int p = 1, t;
     for (int i = 0; s[i]; i++) {
-        tmp = s[i] - 97;
-        if (!son[t][tmp])
-            son[t][tmp] = ++pos;
-        t = son[t][tmp];
+        t = s[i] - 97;
+        if (!son[p][t])
+            son[p][t] = ++pos;
+        p = son[p][t];
     }
-    num[t]++;
+    num[p]++;
 }
 int main() {
     pos = 1;
