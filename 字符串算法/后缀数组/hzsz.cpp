@@ -18,17 +18,19 @@ int main() {
     scanf("%s", s + 1);
     n = strlen(s + 1);
     for (int i = 1; i <= n; i++)
-        a[id[i] = i] = s[i] - 97;
-    Sort(a, 25);
+        a[id[i] = i] = s[i] - 96;
+    Sort(a, 26);
+    for (int i = 1, t = 0; i <= n; i++)
+        rk[id[i]] = a[id[i]] == a[id[i - 1]] ? t : ++t;
     for (int i = 1; i <= n; i <<= 1) {
-        for (int j = 1, t = 0; j <= n; j++)
-            rk[id[j]] = a[id[j]] == a[id[j - 1]] && b[id[j]] == b[id[j - 1]] ? t : ++t;
         for (int j = 1; j <= n; j++) {
             a[j] = rk[j];
             b[j] = rk[min(i + j, n + 1)];
         }
         Sort(b, n);
         Sort(a, n);
+        for (int j = 1, t = 0; j <= n; j++)
+            rk[id[j]] = a[id[j]] == a[id[j - 1]] && b[id[j]] == b[id[j - 1]] ? t : ++t;
     }
     for (int i = 1; i < n; i++)
         printf("%d ", rk[i]);
