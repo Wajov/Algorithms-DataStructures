@@ -36,18 +36,14 @@ void Splay(int p) {
 }
 void Insert(int x) {
     int p, t;
-    bool flag = false;
-    for (p = root; p; p = x < key[p] ? l[p] : r[p]) {
+    for (p = root; p > 0 && x != key[p]; p = x < key[p] ? l[p] : r[p]) {
         t = p;
         s[p]++;
-        if (key[p] == x) {
-            flag = true;
-            break;
-        }
     }
-    if (flag)
+    if (p) {
+        s[p]++;
         num[p]++;
-    else {
+    } else {
         p = ++pos;
         key[p] = x;
         s[p] = num[p] = 1;
@@ -60,25 +56,23 @@ void Insert(int x) {
 }
 void Delete(int x) {
     int p, q, t;
-    for (p = root; key[p] != x; p = x < key[p] ? l[p] : r[p])
+    for (p = root; x != key[p]; p = x < key[p] ? l[p] : r[p])
         s[p]--;
     s[p]--;
     if (!(--num[p]))
-        if (!l[p] || ! r[p]) {
-            if (p == root)
-                root = l[p] + r[p];
-            else
-                p == l[f[p]] ? l[f[p]] = l[p] + r[p] : r[f[p]] = l[p] + r[p];
-            f[l[p] + r[p]] = f[p];
-        } else {
+        if (l[p]) {
             for (q = l[p]; r[q]; q = r[q]);
             for (t = l[p]; r[t]; t = r[t])
                 s[t] -= num[q];
-            q == l[f[q]] ? l[f[q]] = l[q] + r[q] : r[f[q]] = l[q] + r[q];
-            f[l[q] + r[q]] = f[q];
             key[p] = key[q];
             num[p] = num[q];
-        }
+            q == l[f[q]] ? l[f[q]] = l[q] : r[f[q]] = l[q];
+            f[l[q]] = f[q];
+        } else if (f[p]) {
+            p == l[f[p]] ? l[f[p]] = r[p] : r[f[p]] = r[p];
+            f[r[p]] = f[p];
+        } else
+            root = r[p];
 }
 int Rank(int x) {
     int p = root, t = s[l[root]];
