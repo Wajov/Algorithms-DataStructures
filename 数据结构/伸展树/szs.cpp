@@ -55,24 +55,17 @@ void Insert(int x) {
     Splay(p);
 }
 void Delete(int x) {
-    int p, q, t;
-    for (p = root; x != key[p]; p = x < key[p] ? l[p] : r[p])
-        s[p]--;
-    s[p]--;
+    int p;
+    for (p = root; x != key[p]; p = x < key[p] ? l[p] : r[p]);
+    Splay(p);
     if (!(--num[p]))
         if (l[p]) {
-            for (q = l[p]; r[q]; q = r[q]);
-            for (t = l[p]; r[t]; t = r[t])
-                s[t] -= num[q];
-            key[p] = key[q];
-            num[p] = num[q];
-            q == l[f[q]] ? l[f[q]] = l[q] : r[f[q]] = l[q];
-            f[l[q]] = f[q];
-        } else if (f[p]) {
-            p == l[f[p]] ? l[f[p]] = r[p] : r[f[p]] = r[p];
-            f[r[p]] = f[p];
+            for (p = l[p]; r[p]; p = r[p]);
+            Splay(p);
+            if (r[p] = r[r[p]])
+                f[r[p]] = p;
         } else
-            root = r[p];
+            f[root = r[p]] = 0;
 }
 int Rank(int x) {
     int p = root, t = s[l[root]];
