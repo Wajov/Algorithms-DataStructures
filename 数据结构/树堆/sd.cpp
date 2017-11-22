@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 const int N = 100001;
-int root, pos, l[N], r[N], f[N], s[N], num[N], key[N];
+int root, pos, l[N], r[N], f[N], s[N], num[N], wgt[N], key[N];
 inline void L(int p) {
     int t = f[p];
     if (r[t] = l[p])
@@ -12,6 +12,8 @@ inline void L(int p) {
     l[p] = t;
     s[p] = s[t];
     s[t] = s[l[t]] + s[r[t]] + num[t];
+    if (t == root)
+        root = p;
 }
 inline void R(int p) {
     int t = f[p];
@@ -23,16 +25,8 @@ inline void R(int p) {
     r[p] = t;
     s[p] = s[t];
     s[t] = s[l[t]] + s[r[t]] + num[t];
-}
-void Splay(int p) {
-    for (int t; t = f[p]; )
-        if (!f[t])
-            p == l[t] ? R(p) : L(p);
-        else if (p == l[t])
-            t == l[f[t]] ? (R(t), R(p)) : (R(p), L(p));
-        else
-            t == r[f[t]] ? (L(t), L(p)) : (L(p), R(p));
-    root = p;
+    if (t == root)
+        root = p;
 }
 void Insert(int x) {
     int p, t;
@@ -46,26 +40,30 @@ void Insert(int x) {
     } else {
         p = ++pos;
         key[p] = x;
+        wgt[p] = rand() % N + 1;
         s[p] = num[p] = 1;
         if (root) {
             f[p] = t;
             x < key[t] ? l[t] = p : r[t] = p;
-        }
+            while (f[p] && wgt[p] > wgt[f[p]])
+                p == l[f[p]] ? R(p) : L(p);
+        } else
+            root = p;
     }
-    Splay(p);
 }
 void Delete(int x) {
     int p;
-    for (p = root; x != key[p]; p = x < key[p] ? l[p] : r[p]);
-    Splay(p);
-    if (!(--num[p]))
-        if (l[p]) {
-            for (p = l[p]; r[p]; p = r[p]);
-            Splay(p);
-            if (r[p] = r[r[p]])
-                f[r[p]] = p;
-        } else
-            f[root = r[p]] = 0;
+    for (p = root; x != key[p]; p = x < key[p] ? l[p] : r[p])
+        s[p]--;
+    s[p]--;
+    if (!(--num[p])) {
+        while (l[p] || r[p])
+            wgt[l[p]] > wgt[r[p]] ? R(l[p]) : L(r[p]);
+        if (f[p])
+            p == l[f[p]] ? l[f[p]] = 0 : r[f[p]] = 0;
+        else
+            root = 0;
+    }
 }
 int Rank(int x) {
     int p = root, t = s[l[root]];
@@ -78,7 +76,6 @@ int Rank(int x) {
             p = r[p];
             t += s[l[p]];
         }
-    Splay(p);
     return t + 1;
 }
 int Select(int x) {
@@ -92,7 +89,6 @@ int Select(int x) {
             p = r[p];
             t += s[l[p]];
         }
-    Splay(p);
     return key[p];
 }
 int Pred(int x) {
@@ -103,7 +99,6 @@ int Pred(int x) {
             p = r[p];
         } else
             p = l[p];
-    Splay(t);
     return key[t];
 }
 int Succ(int x) {
@@ -114,9 +109,9 @@ int Succ(int x) {
             p = l[p];
         } else
             p = r[p];
-    Splay(t);
     return key[t];
 }
 int main() {
+    srand(time(NULL));
     return 0;
 }
