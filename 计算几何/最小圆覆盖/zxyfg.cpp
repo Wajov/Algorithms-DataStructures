@@ -4,7 +4,8 @@
 using namespace std;
 typedef pair<double, double> Point;
 const int N = 1000001;
-int x, y, n;
+const double EPS = 1e-5;
+int n;
 double r;
 Point O, p[N];
 inline double Sqr(double x) {
@@ -14,7 +15,7 @@ inline double Dist(Point a, Point b) {
     return sqrt(Sqr(a.x - b.x) + Sqr(a.y - b.y));
 }
 inline Point Calc(Point a, Point b, Point c) {
-    if (fabs((b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y)) < 1e-5)
+    if (fabs((b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y)) < EPS)
         if (Dist(a, c) > Dist(b, c))
             return {(a.x + c.x) / 2, (a.y + c.y) / 2};
         else

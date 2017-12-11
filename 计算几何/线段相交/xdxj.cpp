@@ -15,10 +15,10 @@ inline double Cross(Point a, Point b, Point c) {
 int main() {
     scanf("%lf%lf%lf%lf%lf%lf%lf%lf", &a.x1, &a.y1, &a.x2, &a.y2, &b.x1, &b.y1, &b.x2, &b.y2);
     if (max(a.x1, a.x2) < min(b.x1, b.x2) || max(b.x1, b.x2) < min(a.x1, a.x2))
-        puts("NO");
+        puts("No");
     else if (max(a.y1, a.y2) < min(b.y1, b.y2) || max(b.y1, b.y2) < min(a.y1, a.y2))
-        puts("NO");
+        puts("No");
     else
-        puts(Cross(a.x, a.y, b.x) * Cross(a.x, a.y, b.y) <= 0 && Cross(b.x, b.y, a.x) * Cross(b.x, b.y, a.y) <= 0 ? "YES" : "NO");
+        puts(Cross(a.x, a.y, b.x) * Cross(a.x, a.y, b.y) <= 0 && Cross(b.x, b.y, a.x) * Cross(b.x, b.y, a.y) <= 0 ? "Yes" : "No");
     return 0;
 }
