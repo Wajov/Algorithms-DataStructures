@@ -12,13 +12,15 @@ Segment a, b;
 inline double Cross(Point a, Point b, Point c) {
     return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
 }
+inline bool Judge(Segment a, Segment b) {
+    if (max(a.x1, a.x2) < min(b.x1, b.x2) || max(b.x1, b.x2) < min(a.x1, a.x2))
+        return false;
+    if (max(a.y1, a.y2) < min(b.y1, b.y2) || max(b.y1, b.y2) < min(a.y1, a.y2))
+        return false;
+    return Cross(a.x, a.y, b.x) * Cross(a.x, a.y, b.y) <= 0 && Cross(b.x, b.y, a.x) * Cross(b.x, b.y, a.y) <= 0;
+}
 int main() {
     scanf("%lf%lf%lf%lf%lf%lf%lf%lf", &a.x1, &a.y1, &a.x2, &a.y2, &b.x1, &b.y1, &b.x2, &b.y2);
-    if (max(a.x1, a.x2) < min(b.x1, b.x2) || max(b.x1, b.x2) < min(a.x1, a.x2))
-        puts("No");
-    else if (max(a.y1, a.y2) < min(b.y1, b.y2) || max(b.y1, b.y2) < min(a.y1, a.y2))
-        puts("No");
-    else
-        puts(Cross(a.x, a.y, b.x) * Cross(a.x, a.y, b.y) <= 0 && Cross(b.x, b.y, a.x) * Cross(b.x, b.y, a.y) <= 0 ? "Yes" : "No");
+    puts(Judge(a, b) ? "Yes" : "No");
     return 0;
 }

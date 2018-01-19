@@ -4,6 +4,8 @@
 \usepackage{listings}
 \usepackage{fontspec}
 \usepackage{xcolor}
+\usepackage[CJKbookmarks = true]{hyperref}
+\hypersetup{colorlinks = true, linkcolor = black}
 \geometry{left = 2.5cm, right = 2.5cm, top = 2.54cm, bottom = 2.54cm}
 \title{模板}
 \author{Wajov}
@@ -1508,6 +1510,59 @@ int main() {
     return 0;
 }
 \end{lstlisting}
+\subsection{Miller-Rabin测试}
+\begin{lstlisting}
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+ll n;
+ll Mul(ll a, ll b, ll MOD) {
+    ll ans = 0;
+    while (b) {
+        if (b & 1)
+            ans = (ans + a) % MOD;
+        a = (a << 1) % MOD;
+        b >>= 1;
+    }
+    return ans;
+}
+ll Pow(ll a, ll b, ll MOD) {
+    ll ans = 1;
+    while (b) {
+        if (b & 1)
+            ans = Mul(ans, a, MOD);
+        a = Mul(a, a, MOD);
+        b >>= 1;
+    }
+    return ans;
+}
+bool Judge(ll p) {
+    if (p < 2)
+        return false;
+    int num = 0;
+    ll t = p - 1, t1, t2;
+    for (; !(t & 1); t >>= 1)
+        num++;
+    for (int i = 0; i < 5; i++) {
+        t1 = Pow(rand() % (p - 1) + 1, t, p);
+        for (int j = 0; t1 != 1 && j < num; j++) {
+            t2 = Mul(t1, t1, p);
+            if (t1 != 1 && t1 != p - 1 && t2 == 1)
+                return false;
+            t1 = t2;
+        }
+        if (t1 != 1)
+            return false;
+    }
+    return true;
+}
+int main() {
+    srand(time(NULL));
+    scanf("%lld", &n);
+    puts(Judge(n) ? "YES" : "NO");
+    return 0;
+}
+\end{lstlisting}
 \subsection{Euler筛}
 \begin{lstlisting}
 #include <bits/stdc++.h>
@@ -1683,17 +1738,20 @@ Segment a, b;
 inline double Cross(Point a, Point b, Point c) {
     return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
 }
+inline bool Judge(Segment a, Segment b) {
+    if (max(a.x1, a.x2) < min(b.x1, b.x2) || max(b.x1, b.x2) < min(a.x1, a.x2))
+        return false;
+    if (max(a.y1, a.y2) < min(b.y1, b.y2) || max(b.y1, b.y2) < min(a.y1, a.y2))
+        return false;
+    return Cross(a.x, a.y, b.x) * Cross(a.x, a.y, b.y) <= 0 &&
+           Cross(b.x, b.y, a.x) * Cross(b.x, b.y, a.y) <= 0;
+}
 int main() {
     scanf("%lf%lf%lf%lf%lf%lf%lf%lf", &a.x1, &a.y1, &a.x2, &a.y2, &b.x1, &b.y1, &b.x2, &b.y2);
-    if (max(a.x1, a.x2) < min(b.x1, b.x2) || max(b.x1, b.x2) < min(a.x1, a.x2))
-        puts("No");
-    else if (max(a.y1, a.y2) < min(b.y1, b.y2) || max(b.y1, b.y2) < min(a.y1, a.y2))
-        puts("No");
-    else
-        puts(Cross(a.x, a.y, b.x) * Cross(a.x, a.y, b.y) <= 0 &&
-             Cross(b.x, b.y, a.x) * Cross(b.x, b.y, a.y) <= 0 ? "Yes" : "No");
+    puts(Judge(a, b) ? "Yes" : "No");
     return 0;
 }
+
 \end{lstlisting}
 \subsection{多边形面积}
 \begin{lstlisting}
