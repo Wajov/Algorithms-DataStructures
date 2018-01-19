@@ -1,93 +1,70 @@
 #include <bits/stdc++.h>
 using namespace std;
 const int N = 100001;
-int root, pos, l[N], r[N], f[N], s[N], num[N], wgt[N], key[N];
-inline void L(int p) {
-    int t = f[p];
-    if (r[t] = l[p])
-        f[l[p]] = t;
-    if (f[p] = f[t])
-        t == l[f[t]] ? l[f[t]] = p : r[f[t]] = p;
-    f[t] = p;
-    l[p] = t;
-    s[p] = s[t];
-    s[t] = s[l[t]] + s[r[t]] + num[t];
-    if (t == root)
-        root = p;
+int root, pos, l[N], r[N], s[N], wgt[N], key[N];
+inline void L(int &p) {
+    int t = r[p];
+    r[p] = l[t];
+    l[t] = p;
+    s[t] = s[p];
+    s[p] = s[l[p]] + s[r[p]] + 1;
+    p = t;
 }
-inline void R(int p) {
-    int t = f[p];
-    if (l[t] = r[p])
-        f[r[p]] = t;
-    if (f[p] = f[t])
-        t == l[f[t]] ? l[f[t]] = p : r[f[t]] = p;
-    f[t] = p;
-    r[p] = t;
-    s[p] = s[t];
-    s[t] = s[l[t]] + s[r[t]] + num[t];
-    if (t == root)
-        root = p;
+inline void R(int &p) {
+    int t = l[p];
+    l[p] = r[t];
+    r[t] = p;
+    s[t] = s[p];
+    s[p] = s[l[p]] + s[r[p]] + 1;
+    p = t;
 }
-void Insert(int x) {
-    int p, t;
-    for (p = root; p && x != key[p]; p = x < key[p] ? l[p] : r[p]) {
-        t = p;
-        s[p]++;
-    }
+void Insert(int &p, int x) {
     if (p) {
         s[p]++;
-        num[p]++;
+        Insert(x < key[p] ? l[p] : r[p], x);
     } else {
         p = ++pos;
         key[p] = x;
         wgt[p] = rand() % N + 1;
-        s[p] = num[p] = 1;
-        if (root) {
-            f[p] = t;
-            x < key[t] ? l[t] = p : r[t] = p;
-            while (f[p] && wgt[p] > wgt[f[p]])
-                p == l[f[p]] ? R(p) : L(p);
-        } else
-            root = p;
+        s[p] = 1;
     }
+    if (l[p] && wgt[l[p]] < wgt[p])
+        R(p);
+    if (r[p] && wgt[r[p]] < wgt[p])
+        L(p);
 }
-void Delete(int x) {
-    int p;
-    for (p = root; x != key[p]; p = x < key[p] ? l[p] : r[p])
-        s[p]--;
+int Delete(int &p, int x) {
+    int ans;
     s[p]--;
-    if (!(--num[p])) {
-        while (l[p] || r[p])
-            wgt[l[p]] > wgt[r[p]] ? R(l[p]) : L(r[p]);
-        if (f[p])
-            p == l[f[p]] ? l[f[p]] = 0 : r[f[p]] = 0;
-        else
-            root = 0;
-    }
+    if (x == key[p] || x < key[p] && !l[p] || x > key[p] && !r[p]) {
+        ans = key[p];
+        l[p] ? key[p] = Delete(l[p], x + 1) : p = r[p];
+    } else
+        ans = Delete(x < key[p] ? l[p] : r[p], x);
+    return ans;
 }
 int Rank(int x) {
-    int p = root, t = s[l[root]];
-    while (key[p] != x)
-        if (x < key[p]) {
+    int p = root, t = s[l[root]], ans;
+    while (p)
+        if (x <= key[p]) {
+            ans = t;
             p = l[p];
-            t -= s[r[p]] + num[p];
+            t -= s[r[p]] + 1;
         } else {
-            t += num[p];
             p = r[p];
-            t += s[l[p]];
+            t += s[l[p]] + 1;
         }
-    return t + 1;
+    return ans + 1;
 }
 int Select(int x) {
     int p = root, t = s[l[root]];
-    while (x < t + 1 || x > t + num[p])
+    while (x != t + 1)
         if (x < t + 1) {
             p = l[p];
-            t -= s[r[p]] + num[p];
+            t -= s[r[p]] + 1;
         } else {
-            t += num[p];
             p = r[p];
-            t += s[l[p]];
+            t += s[l[p]] + 1;
         }
     return key[p];
 }
