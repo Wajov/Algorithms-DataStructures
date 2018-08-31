@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 const int N = 100001;
-int n, a[N], b[N], sum[N], tmp[N], id[N], rk[N + 10];
+int n, a[N], b[N], sum[N], tmp[N], id[N], rk[N], g[N], h[N];
 char s[N + 10];
 void Sort(int a[], int m) {
     memset(sum, 0, sizeof(sum));
@@ -14,8 +14,7 @@ void Sort(int a[], int m) {
     for (int i = 1; i <= n; i++)
         id[tmp[i]] = i;
 }
-int main() {
-    scanf("%s", s + 1);
+void Build() {
     n = strlen(s + 1);
     for (int i = 1; i <= n; i++)
         a[id[i] = i] = s[i] - 96;
@@ -32,8 +31,11 @@ int main() {
         for (int j = 1, t = 0; j <= n; j++)
             rk[id[j]] = a[id[j]] == a[id[j - 1]] && b[id[j]] == b[id[j - 1]] ? t : ++t;
     }
-    for (int i = 1; i < n; i++)
-        printf("%d ", rk[i]);
-    printf("%d\n", rk[n]);
+    for (int i = 1; i <= n; i++) {
+        for (g[i] = max(g[i - 1] - 1, 0); s[i + g[i]] == s[id[rk[i] - 1] + g[i]]; g[i]++);
+        h[rk[i]] = g[i];
+    }
+}
+int main() {
     return 0;
 }
