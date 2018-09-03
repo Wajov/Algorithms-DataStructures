@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 const int N = 100001;
-int num, a[N], l[N << 1], r[N << 1], ll[N << 1], rr[N << 1], sum[N << 1], lab[N << 1];
+int pos, a[N], l[N << 1], r[N << 1], ll[N << 1], rr[N << 1], sum[N << 1], lab[N << 1];
 inline void Label(int p, int x) {
     sum[p] += (rr[p] - ll[p] + 1) * x;
     lab[p] += x;
@@ -24,8 +24,8 @@ void Build(int p, int x, int y) {
         return;
     }
     int z = x + y >> 1;
-    Build(l[p] = ++num, x, z);
-    Build(r[p] = ++num, z + 1, y);
+    Build(l[p] = ++pos, x, z);
+    Build(r[p] = ++pos, z + 1, y);
     Up(p);
 }
 void Add(int p, int x, int y, int z) {
@@ -56,6 +56,6 @@ int Sum(int p, int x, int y) {
         return Sum(l[p], x, rr[l[p]]) + Sum(r[p], ll[r[p]], y);
 }
 int main() {
-    num = 1;
+    pos = 1;
     return 0;
 }
