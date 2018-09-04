@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 const int N = 100001;
-int num, l[N], r[N], key[N];
+int pos, l[N], r[N], key[N];
 int Merge(int p, int q) {
     if (!p)
         return q;
@@ -14,8 +14,8 @@ int Merge(int p, int q) {
     return p;
 }
 void Push(int &p, int x) {
-    key[++num] = x;
-    p = Merge(p, num);
+    key[++pos] = x;
+    p = Merge(p, pos);
 }
 void Pop(int &p) {
     p = Merge(l[p], r[p]);
