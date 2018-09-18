@@ -32,9 +32,11 @@ void NTT(int a[], int y[], int flag) {
         }
         memcpy(y, yt, sizeof(yt));
     }
-    if (flag < 0)
+    if (flag < 0) {
+        int t = Pow(SIZE, MOD - 2);
         for (int i = 0; i < SIZE; i++)
-            y[i] = (ll)y[i] * Pow(SIZE, MOD - 2) % MOD;
+            y[i] = (ll)y[i] * t % MOD;
+    }
 }
 int main() {
     scanf("%d%d", &n, &m);
