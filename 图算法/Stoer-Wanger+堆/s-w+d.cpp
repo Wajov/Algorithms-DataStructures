@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-const int N = 101;
+const int N = 1001;
 int n, m, u, v, c, tmp, ans, f[N], d[N];
 bool flag[N];
 vector<pair<int, int> > g[N];
