@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 100001, SIZE = 30;
+int top, pos, key[N * SIZE], Head[SIZE], Next[N * SIZE], Link[N * SIZE];
+int Rand() {
+    for (int i = 1; ; i++)
+        if (rand() % 2)
+            return i;
+}
+int InsertNode(int x, int )
+void Insert(int x) {
+    int t = Rand();
+    for (int i = top + 1; i <= t; i++) {
+        Head[i] = pos + 1;
+        key[++pos] = INT_MIN;
+        Next[pos] = pos + 1;
+        key[++pos] = INT_MAX;
+    }
+    top = max(top, tmp);
+    for (int i = top, p = Head[top]; i; i--) {
+        for (; key[Next[p]] <= x; p = Next[p]);
+        t = Next[p];
+        Next[p] = ++pos;
+        key[pos] = x;
+        Next[pos] = t;
+    }
+}
+void Delete(int x) {
+    
+}
+int Rank(int x) {
+    
+}
+int Select(int x) {
+    
+}
+int Pred(int x) {
+    
+}
+int Secc(int x) {
+    
+}
+int main() {
+    return 0;
+}
